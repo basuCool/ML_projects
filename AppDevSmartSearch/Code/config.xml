@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--SMART_SEARCH_CONFIGURATION:
+The configuration is split into 3 parts
+	
+	1. Preprocessing section : can be changed for database and dictionary updation
+	2. Implementation section : changed to re-train/experiment with the Search-model	
+	3. Interface section : changed to update number of results show and ordering of results.
+	
+	4.[IMPORTANT] Global Section : changes applied to all the above 3 sections	
+-->
+<config>
+	<preprocessing>		
+	<preprocessing_section_update><!-- update = 1, no update = 0 -->1</preprocessing_section_update>
+		
+		<db><!-- database parameters-->
+			
+			<db_type><!-- csv = 0, excel = 1, mssql = 2, mysql = 3, SAP Hana = 4 -->2</db_type>
+		
+			<db_cols>id,project_id,platform,component,subcomponent,description,functionality,cause,effect,design_controls,status</db_cols>
+		
+			<db_subgroup_cols>id</db_subgroup_cols>
+	
+			<csv><!--fill only if db_type = 0-->
+				<csv_path_db>/path/to/database/file.csv</csv_path_db>
+			</csv>
+			
+			<xlsx><!--fill only if db_type = 1-->
+				<excel_path_db>../Databases/FMEA_Full.xlsx</excel_path_db>
+			</xlsx>
+			
+			<mssql><!--fill only if db_type = 2-->
+				<db_server>PINDSQL01</db_server>
+				<db_user>FMEA_Users</db_user>
+				<db_password>FMEA_Users</db_password>
+				<sql_db_columns_query>SELECT FM.Id as id ,PFM.Id as project_id,PLTFORM.Name as platform,COMPNT.Name as component,SUBCOMPNT.Name as subcomponent,FM.[Description],FM.[Functionality],PFM.[Cause], PFM.[Effect],PFM.[DesignControls],FM.[Status] FROM [FmeAnalysisQAS1].[dbo].[FailureModes] FM LEFT JOIN [FmeAnalysisQAS1].[dbo].[ProjectFailureModes] PFM ON FM.Id=PFM.FailureMode_Id LEFT JOIN [FmeAnalysisQAS1].[dbo].[Platforms] PLTFORM ON FM.[Platform_Id] = PLTFORM.Id LEFT JOIN [FmeAnalysisQAS1].[dbo].[Components] COMPNT ON FM.[Component_Id] = COMPNT.Id LEFT JOIN [FmeAnalysisQAS1].[dbo].[SubComponents] SUBCOMPNT ON FM.[SubComponent_Id] = SUBCOMPNT.Id order by FM.Id </sql_db_columns_query>
+			</mssql>
+			
+			<mysql><!--fill only if db_type = 3-->
+				<db_server>pdtcclrfrm01</db_server>
+				<db_user>root</db_user>
+				<db_password>novellus</db_password>
+				<sql_db_columns_query>SELECT t1.TestCaseID,t1.ProductID,t2.SPRNo,t3.Name,t3.Description,t3.ProjectID,t6.TestStepID,t7.ActionStep,t7.PassFailCriteria,t8.Name as Category,t9.Name as Component,t10.Name as Feature,t11.Name as FocusArea,t12.Name as Hardware FROM track.testcasetags as t1 LEFT JOIN track.testcaseandspr as t2 ON t2.TestCaseID = t1.TestCaseID LEFT JOIN track.testcase as t3 ON t3.TestCaseID = t1.TestCaseID LEFT JOIN track.testcaseandtestcomponentfocus as t4 ON t4.TestCaseID = t1.TestCaseID LEFT JOIN track.testcaseandtesthardware as t5 ON t5.TestCaseID = t1.TestCaseID LEFT JOIN track.testcaseandteststep as t6 ON t6.TestCaseID = t1.TestCaseID LEFT JOIN track.teststeps as t7 ON t7.TestStepID = t6.TestStepID LEFT JOIN track.testcategories as t8 ON t8.CategoryID = t1.CategoryID LEFT JOIN track.testcomponents as t9 ON t9.ComponentID = t4.ComponentID LEFT JOIN track.testfeatures as t10 ON t10.FeatureID = t1.FeatureID LEFT JOIN track.testfocusareas as t11 ON t11.FocusAreaID = t1.FocusArea LEFT JOIN track.testhardware as t12 ON t12.TestHardwareID = t5.TestHardwareID</sql_db_columns_query>
+			</mysql>
+			
+			<SAPhana><!-- fill only if db_type = 3 -->
+				<db_host>example.com</db_host>
+				<db_port>30015</db_port>
+				<db_user>user</db_user>
+				<db_password>secret</db_password>
+				<sap_hana_db_columns_query>SELECT * FROM fires</sap_hana_db_columns_query>			
+			</SAPhana>
+		
+		</db>
+		
+		<dict><!-- fill only if technical dictionary present -->
+			
+			<tech_words><!-- True = 1 , False = 0-->1</tech_words>
+			
+			<dict_type><!--csv = 0, excel = 1, mssql = 2, mysql = 3, SAP Hana = 4-->0</dict_type>
+	
+			<dict_cols>id,term,description</dict_cols>
+	
+			<tech_dict_term_col>term</tech_dict_term_col>
+			
+			<tech_dict_defn_col>description</tech_dict_defn_col>
+			
+			<csv><!-- fill only if dict_type = 0 -->
+				<csv_path_dict>../Dictionary/Definitions.csv</csv_path_dict>
+			</csv>
+			
+			<xlsx><!--fill only if db_type = 1-->
+				<excel_path_dict>../Databases/FMEA_Full.xlsx</excel_path_dict>
+			</xlsx>
+			
+			<mssql><!-- fill only if dict_type = 2 -->
+				<dict_server>/path/to/database/file.db</dict_server>
+				<dict_user>/path/to/database/file.db</dict_user>
+				<dict_password>/path/to/database/file.db</dict_password>
+				<sql_dict_columns_query>SELECT * FROM fires</sql_dict_columns_query>
+			</mssql>
+			
+			<mysql><!-- fill only if dict_type = 3 -->
+				<dict_server>/path/to/database/file.db</dict_server>
+				<dict_user>/path/to/database/file.db</dict_user>
+				<dict_password>/path/to/database/file.db</dict_password>
+				<sql_dict_columns_query>SELECT * FROM fires</sql_dict_columns_query>
+			</mysql>
+		
+			<SAPhana><!-- fill only if dict_type = 4 -->
+				<sap_hana_dict_columns_query>SELECT * FROM fires</sap_hana_dict_columns_query>
+				<dict_host>example.com</dict_host>
+				<dict_port>30015</dict_port>
+				<dict_user>user</dict_user>
+				<dict_password>secret</dict_password>
+			</SAPhana>
+			
+			<regex><!-- fill only if using regex to find technical words instead of pre-made dictionary-->
+			
+				<!-- True = 1 , False = 0-->
+				<regex_tech_words>0</regex_tech_words>
+			
+				<!--fill below regex-string if technical words need to be found through the regex-->
+				<tech_words_regex>2300|C2C3|[0-9]+[A-Za-z0-9]+|[A-Z0-9]+[a-z]?|[A-Z][a-zA-Z0-9]+|[a-z]+[A-Z0-9]+</tech_words_regex>
+			
+			</regex>
+			
+		</dict>
+		
+	</preprocessing>
+	
+	<implementation>	
+	<implementation_section_update><!--update = 1, no update = 0-->1</implementation_section_update>
+		
+		<!-- model training parameters below-->
+		<size>3</size>
+		<window>5</window>
+		<min_count>1</min_count>
+		<workers>20</workers>
+		<epochs>10</epochs>
+		
+	</implementation>
+	
+	<interface>		
+	<interface_section_update><!--update = 1, no update = 0-->1</interface_section_update>
+		
+		<low_to_high_ranking_order><!-- True = 1 , False = 0-->0</low_to_high_ranking_order>
+		
+		<num_of_results><!-- all results = -1 , number = >0 -->-1</num_of_results>
+		
+		<accuracy_percentile><!-- 0 to 100 -->0</accuracy_percentile>
+		
+	</interface>
+	
+	<global>	
+	<global_section_update><!--update = 1, no update = 0-->1</global_section_update>
+		
+		
+		<language>english</language>
+		
+		<autocorrect_on><!-- True = 1 , False = 0-->1</autocorrect_on>
+		
+		<stemmed_words><!-- stemming = 1 , no stemming = 0 -->1</stemmed_words>
+		
+		<paths><!-- paths to store output data-->
+		
+			<!--storing unreadable pickled data .pkl-->
+			<path_non_tech_dict>../Pickles/Non_Tech_Dict.pkl</path_non_tech_dict>
+			<path_tech_dict>../Pickles/Tech_Dict.pkl</path_tech_dict>
+			<path_word2vec_model>../Pickles/Word2Vec_Model.pkl</path_word2vec_model>
+			<path_word2vec_docs>../Pickles/Word2Vec_Docs.pkl</path_word2vec_docs>
+			<path_db_subgrouped>../Pickles/Fmea_Subgrouped.pkl</path_db_subgrouped>
+			
+			<!--storing readable data .xlsx-->
+			<path_outputs>../TestCases/Output.xlsx</path_outputs>
+			<path_test_data>../TestCases/Test_Data.xlsx</path_test_data>
+			
+		</paths>
+	
+	</global>
+	
+</config>
